@@ -112,7 +112,7 @@ for L in Ls:
             filename = 'MLP_errs_H{}_L{}_R{}.pkl'.format(H,L,real)
             
             f = open(filename, 'w')
-            cPickle.dump(f, (trn_err, tst_err, H, L, real))
+            cPickle.dump((trn_err, tst_err, H, L, real), f)
             f.close()
 
             print "Errors saved to {}".format(filename)
