@@ -59,6 +59,9 @@ for i in range(1,5):
 # Define input and output layers
 D, C = 32*32*3, 10
 
+# Define number of folds to use for GPU error evaluation
+gpu_split = 5
+
 # Use seed for reproducability
 np.random.seed(1)
 
@@ -67,7 +70,7 @@ y_train_noise = np.random.randint(10, size=len(y_train_real))
 y_test_noise = np.random.randint(10, size=len(y_test_real))
 
 Hs = range(100, 1100, 100)
-Ls = [1, 2, 3, 4]
+Ls = [2, 3, 4]
 
 for L in Ls:
     for H in Hs:
@@ -98,16 +101,31 @@ for L in Ls:
                     print "Iteration %u: %f" % (i + 1, rmsprop.train(x_train[u:u+batch_size, :],
                                                                      y_train[u:u+batch_size],
                                                                      learning_rate))
-                if i % 10 == 0:    
-                    trn_err.append(mlp.errors(x_train, y_train))
-                    tst_err.append(mlp.errors(x_test, y_test))
+                if i % 10 == 0:
+                    trn_err_sum = 0.0
+                    tst_err_sum = 0.0
+
+                    for part in range(gpu_split):
+                        train_start = int(part * x_train.shape[0]/float(gpu_split))
+                        train_end = int((part + 1) * x_train.shape[0]/float(gpu_split))
+                        test_start = int(part * x_test.shape[0]/float(gpu_split))
+                        test_end = int((part + 1) * x_test.shape[0]/float(gpu_split))
+
+                        trn_err_sum += mlp.errors(x_train[train_start:train_end, :], y_train[train_start:train_end])
+                        tst_err_sum += mlp.errors(x_test[test_start:test_end, :], y_test[test_start:test_end])
+
+                    trn_err.append(trn_err_sum / float(gpu_split))
+                    tst_err.append(tst_err_sum / float(gpu_split))
+
+                    # print "Training error: {}".format(trn_err_sum)
+                    # print "Test error: {}".format(tst_err_sum)
 
                 else:
                     rmsprop.train(x_train[u:u+batch_size, :], y_train[u:u+batch_size], learning_rate)
 
             # Evaluation
-            print "Training error:", mlp.errors(x_train, y_train)
-            print "Test error:", mlp.errors(x_test, y_test)
+            # print "Training error:", mlp.errors(x_train, y_train)
+            # print "Test error:", mlp.errors(x_test, y_test)
 
             filename = 'MLP_errs_H{}_L{}_R{}.pkl'.format(H,L,real)
             
