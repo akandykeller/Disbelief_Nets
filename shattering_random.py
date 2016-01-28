@@ -10,7 +10,7 @@ import numpy as np
 from numpy import random
 import csv
 
-file_name = 'MLP_VC_H10_Lr_N500-2500.csv'
+file_name = 'MLP_VC_H10_Lr_N500-5000.csv'
 
 # Train MLP using SGD until error is 0, or until n_iter
 # is reached using a threshold of 0.5 on the sigmoid output
