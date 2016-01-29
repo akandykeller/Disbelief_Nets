@@ -40,18 +40,18 @@ if __name__ == "__main__":
                   'N_data', 'error', 'iterations']
 
     # Open the results file and write header
-    results_file = open(file_name, 'w')
-    writer = csv.DictWriter(results_file, fieldnames=fieldnames)
-    writer.writeheader()
-    results_file.close()
+    #results_file = open(file_name, 'w')
+    #writer = csv.DictWriter(results_file, fieldnames=fieldnames)
+    #writer.writeheader()
+    #results_file.close()
 
     # Parameters:
     # Maximum number of iterations before stopping
-    n_iter = 300000
+    n_iter = 500000
     # Dimension of each data point
     d = 100
     # List of number of points to iterate over
-    num_pts = range(500, 5000, 100)# + range(500, 1100, 50)
+    num_pts = range(2400, 100000, 100)# + range(500, 1100, 50)
     # Number of hidden units
     Hs = [10]
     # Number of layers
